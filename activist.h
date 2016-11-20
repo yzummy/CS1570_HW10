@@ -1,6 +1,6 @@
 /*
-   Programmer: Christopher O'Toole
-   Date: 11/13/2016
+   Programmers: Christopher O'Toole and Yunchao Zhang
+   Date:
    File: activist.h
    Purpose: Definition for a Activist class which represents a activist in
          a town.

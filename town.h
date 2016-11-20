@@ -1,6 +1,6 @@
 /*
-   Programmer: Christopher O'Toole
-   Date: 11/13/2016
+   Programmers: Christopher O'Toole and Yunchao Zhang
+   Date:
    File: town.h
    Purpose: Definition for a Town class which represents a town and the objects
          within it via a grid system.

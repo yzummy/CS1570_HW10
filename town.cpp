@@ -1,6 +1,6 @@
 /*
-   Programmer: Christopher O'Toole
-   Date: 11/13/2016
+   Programmers: Christopher O'Toole and Yunchao Zhang
+   Date:
    File: town.cpp
    Purpose: Definitions of functions pertaining to the Town class that manage
          access to the town's grid.

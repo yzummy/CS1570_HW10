@@ -1,6 +1,6 @@
 /*
-   Programmer: Christopher O'Toole
-   Date: 11/13/2016
+   Programmers: Christopher O'Toole and Yunchao Zhang
+   Date:
    File: polluter.cpp
    Purpose: Definitions of functions which control the behavior
         of a polluter within a town object's grid.

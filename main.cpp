@@ -1,8 +1,8 @@
 /*
    Programmers: Christopher O'Toole and Yunchao Zhang
-   Date: 
-   File: hw8_main.cpp
-   Purpose: 
+   Date:
+   File: main.cpp
+   Purpose:
 */
 
 #include <iostream>

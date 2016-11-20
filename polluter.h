@@ -1,6 +1,6 @@
 /*
-   Programmer: Christopher O'Toole
-   Date: 11/13/2016
+   Programmers: Christopher O'Toole and Yunchao Zhang
+   Date:
    File: polluter.h
    Purpose: Definition for a Polluter class which represents a polluter in
          a town.
