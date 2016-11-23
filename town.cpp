@@ -7,6 +7,8 @@
 */
 
 #include "Town.h"
+#include <cstdlib>
+using namespace std;
 
 Town::Town( const short maxDimUsed ) : m_MaxDimUsed( maxDimUsed )
 {
@@ -28,7 +30,6 @@ void Town::clear( )
   for ( int i = 0; i < m_MaxDimUsed; ++i )
     for ( int j = 0; j < m_MaxDimUsed; ++j )
       m_Grid[i][j] = TOWN_EMPTY_SPACE;
-
   return;
 }
 
@@ -60,10 +61,37 @@ void Town::build( )
   return;
 }
 
+void Town::initRoot(const int numRoots)
+{
+  int x = 0, y = 0;
+  if(numRoots < MAX_NUM_ROOTS)
+  {
+    for(int i = 0; i < numRoots; i++)
+    {
+      root r;
+      roots[i] = r;
+    
+      do
+      {
+        x = rand() % m_MaxDimUsed;
+        y = rand() % m_MaxDimUsed;
+      }while(((x == m_MaxDimUsed / 2)&&(y == m_MaxDimUsed / 2))
+            ||(!isGridEmptyAt(x, y)));
+      setGridAt(x, y, ROOT_SYMBOL);
+    }
+  }
+  else
+  {
+    cout << "Exceeded maximum amount of roots!" << endl;
+    exit(-1);
+  }
+  return;
+}
+
 bool Town::isWithinGrid( const int x, const int y ) const
 {
   // are coordinates passed within used grid space?
-  return x > 0 && y > 0 && x < m_MaxDimUsed && y < m_MaxDimUsed;
+  return x >= 0 && y >= 0 && x < m_MaxDimUsed && y < m_MaxDimUsed;
 }
 
 void Town::setGridAt( const int x, const int y, const char symbol )
@@ -73,7 +101,7 @@ void Town::setGridAt( const int x, const int y, const char symbol )
     m_Grid[x][y] = symbol;
   else // display an error and terminate if they aren't
   {
-    cout << "Could not set grid at ( " << x << ", " << y << " )!" << endl;
+    cout << "SET Could not set grid at ( " << x << ", " << y << " )!" << endl;
     exit( -1 );
   }
 
@@ -89,7 +117,7 @@ char Town::getGridAt( const int x, const int y ) const
     val = m_Grid[x][y];
   else // display an error and terminate if they aren't
   {
-    cout << "Could not get grid value at ( " << x << ", " << y << " )!"
+    cout << "GET Could not get grid value at ( " << x << ", " << y << " )!"
          << endl;
     exit( -1 );
   }

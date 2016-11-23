@@ -6,7 +6,8 @@
 */
 
 #include "root.h"
-using namespace;
+#include <cstdlib>
+using namespace std;
 
 root::root()
 {
@@ -15,15 +16,25 @@ root::root()
     isNeg = 1;
   if(isNeg)
   {
-    effVal = LOW_NEGATIVE + static_cast<float> (rand()) 
+    effVal = MIN_NEGATIVE + static_cast<float> (rand()) 
             / (static_cast<float> (RAND_MAX 
-            / (HIGH_NEGATIVE - LOW_NEGATIVE)));
+            / (MAX_NEGATIVE - MIN_NEGATIVE)));
     type = NEG_TYPE;         
   }else
   {
-    effVal = LOW_POSITIVE + static_cast<float> (rand())
+    effVal = MIN_POSITIVE + static_cast<float> (rand())
             / (static_cast<float> (RAND_MAX
-            / (HIGH_POSITIVE - LOW_POSITIVE)));
+            / (MAX_POSITIVE - MIN_POSITIVE)));
     type = POS_TYPE;
   }
+}
+
+string root::getType()
+{
+  return type;
+}
+
+float root::getEffVal()
+{
+  return effVal;
 }

@@ -7,6 +7,9 @@
 */
 
 #include "activist.h"
+#include <cstdlib>
+
+using namespace std;
 
 Activist::Activist( const string name, const char symbol )
 : m_X( DEFAULT_POS ), m_Y( DEFAULT_POS ),
@@ -50,9 +53,9 @@ void Activist::randMove( Town& town )
   do
   {
     // add -1, 0, or 1 to current x coord
-    x = m_X + ( rand( ) % 3 - 1 );
+    x = m_X + ( rand() % 3 - 1 );
     // add -1, 0, or 1 to current y coord
-    y = m_Y + ( rand( ) % 3 - 1 );
+    y = m_Y + ( rand() % 3 - 1 );
     // while coordinates are invalid or collision is detected
   } while( !town.isWithinGrid( x, y ) || !town.isGridEmptyAt( x, y ) );
 

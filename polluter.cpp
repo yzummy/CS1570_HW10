@@ -7,6 +7,7 @@
 */
 
 #include "polluter.h"
+#include <cstdlib>
 
 Polluter::Polluter( const string name, const char symbol )
 : m_X( POLLUTER_DEFAULT_COORD_VAL ), m_Y( POLLUTER_DEFAULT_COORD_VAL ),

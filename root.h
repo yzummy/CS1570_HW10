@@ -18,6 +18,7 @@ const float MIN_NEGATIVE = -0.01;
 const float MAX_NEGATIVE = -0.001;
 const float MIN_POSITIVE = 0.05;
 const float MAX_POSITIVE = 0.1;
+const char ROOT_SYMBOL = 'R';
 
 class root
 {
@@ -27,7 +28,8 @@ private:
   
 public:
   root();
-     
+  string getType();
+  float getEffVal();     
 };
 
 #endif

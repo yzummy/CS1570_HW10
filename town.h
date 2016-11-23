@@ -10,6 +10,7 @@
 #define TOWN_H
 
 #include <iostream>
+#include "root.h"
 using namespace std;
 
 // max width/height of town
@@ -22,6 +23,8 @@ const char TOWN_EXIT_CHAR = 'E';
 const char TOWN_EMPTY_SPACE = ' ';
 // grid character separator
 const char TOWN_GRID_SEP = '|';
+// max amount of roots
+const int MAX_NUM_ROOTS = 20;
 
 class Town
 {
@@ -69,7 +72,17 @@ class Town
 
     bool isGridEmptyAt( const int x, const int y ) const;
 
-
+    //Desc:
+    //Pre: 
+    //Post: 
+    void initRoot(const int numRoots);
+    
+    //Desc:
+    //Pre:
+    //Post:
+    root getArrRoot(const int count){return roots[count];}
+    
+    
     //Desc: The getMaxDimUsed( ) region returns the max width/height of the
     //   town.
     //Pre:  None.
@@ -80,6 +93,7 @@ class Town
   private:
     char  m_Grid[TOWN_MAX_DIM][TOWN_MAX_DIM]; // grid representing town
     short m_MaxDimUsed; // max dimensions of town that are actually in use
+    root roots[MAX_NUM_ROOTS]; // array of roots in the town
 
     //Desc: The clear( ) function fills the used region of the town grid with
     //   empty space.
@@ -103,6 +117,7 @@ class Town
     //   the program terminates.
 
     char getGridAt( const int x, const int y ) const;
+
 };
 
 #endif
