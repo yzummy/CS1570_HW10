@@ -28,8 +28,8 @@ private:
   
 public:
   root();
-  string getType();
-  float getEffVal();     
+  string getType() const;
+  float getEffVal() const;     
 };
 
 #endif

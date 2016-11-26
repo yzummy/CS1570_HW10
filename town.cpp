@@ -64,7 +64,8 @@ void Town::build( )
 void Town::initRoot(const int numRoots)
 {
   int x = 0, y = 0;
-  if(numRoots < MAX_NUM_ROOTS)
+  m_numRoots = numRoots;
+  if(numRoots <= MAX_NUM_ROOTS)
   {
     for(int i = 0; i < numRoots; i++)
     {
@@ -86,6 +87,21 @@ void Town::initRoot(const int numRoots)
     exit(-1);
   }
   return;
+}
+
+void Town::initCops(const int numCops)
+{
+  int x = 0, y = 0;
+  for(int i = 0; i < numCops; i++)
+  {
+    do
+    {
+      x = rand() % m_MaxDimUsed;
+      y = rand() % m_MaxDimUsed;
+    }while(((x == m_MaxDimUsed / 2)&&(y == m_MaxDimUsed / 2))
+            ||(!isGridEmptyAt(x, y)));
+    setGridAt(x, y, DEFAULT_COP_SYMBOL); 
+  }
 }
 
 bool Town::isWithinGrid( const int x, const int y ) const

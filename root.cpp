@@ -29,12 +29,12 @@ root::root()
   }
 }
 
-string root::getType()
+string root::getType() const
 {
   return type;
 }
 
-float root::getEffVal()
+float root::getEffVal() const
 {
   return effVal;
 }

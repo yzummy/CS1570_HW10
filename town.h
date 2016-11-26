@@ -19,6 +19,8 @@ const short TOWN_MAX_DIM = 25;
 const char TOWN_WALL_CHAR = 'W';
 // char representing exit
 const char TOWN_EXIT_CHAR = 'E';
+// char representing cop
+const char DEFAULT_COP_SYMBOL = 'C';
 // empty space in town
 const char TOWN_EMPTY_SPACE = ' ';
 // grid character separator
@@ -82,32 +84,48 @@ class Town
     //Post:
     root getArrRoot(const int count){return roots[count];}
     
+    //Desc:
+    //Pre:
+    //Post:
+    void setDigLossWall(const int loss = 0){digLossWall = loss; return;}
+
+    //Desc:
+    //Pre:
+    //Post:
+    int getDigLossWall() const {return digLossWall;}
     
+    //Desc:
+    //Pre:
+    //Post:
+    void setDigLossCop(const int loss = 0){digLossCop = loss; return;}
+
+    //Desc:
+    //Pre:
+    //Post:
+    int getDigLossCop() const {return digLossCop;}    
+       
+    
+    //Desc:
+    //Pre:
+    //Post:
+    void initCops(const int numCops);    
+
+    //Desc:
+    //Pre:
+    //Post:
+    int getNumRoots() const {return m_numRoots;}
+    
+    //Desc:
+    //Pre:
+    //Post:
+    void setNumRoots(const int num) {m_numRoots=num; return;}
+        
     //Desc: The getMaxDimUsed( ) region returns the max width/height of the
     //   town.
     //Pre:  None.
     //Post: The max width/height of the town is returned.
 
     short getMaxDimUsed( ) const { return m_MaxDimUsed; }
-
-  private:
-    char  m_Grid[TOWN_MAX_DIM][TOWN_MAX_DIM]; // grid representing town
-    short m_MaxDimUsed; // max dimensions of town that are actually in use
-    root roots[MAX_NUM_ROOTS]; // array of roots in the town
-
-    //Desc: The clear( ) function fills the used region of the town grid with
-    //   empty space.
-    //Pre:  None.
-    //Post: The used region of the town grid is filled with empty space.
-
-    void clear( );
-
-    //Desc: The build( ) function updates the town grid with the walls and
-    //   exits of the town.
-    //Pre:  None.
-    //Post: The town grid is updated with the walls and exits of the town.
-
-    void build( );
 
     //Desc: The getGridAt( ) function retrieves the value of the town grid
     //    at pos ( x, y ).
@@ -117,6 +135,31 @@ class Town
     //   the program terminates.
 
     char getGridAt( const int x, const int y ) const;
+
+
+  private:
+    char  m_Grid[TOWN_MAX_DIM][TOWN_MAX_DIM]; // grid representing town
+    short m_MaxDimUsed; // max dimensions of town that are actually in use
+    int digLossWall; // dignity lost for hitting a wall
+    int digLossCop; // dignity lost for meeting cops
+    int m_numRoots; // number of roots left
+    int numWin; // numebr of winnings
+    root roots[MAX_NUM_ROOTS]; // array of roots in the town
+
+    //Desc: The clear( ) function fills the used region of the town grid with
+    //   empty space.
+    //Pre:  None.
+    //Post: The used region of the town grid is filled with empty space.
+    
+    void clear( );
+
+    //Desc: The build( ) function updates the town grid with the walls and
+    //   exits of the town.
+    //Pre:  None.
+    //Post: The town grid is updated with the walls and exits of the town.
+
+    void build( );
+
 
 };
 

@@ -45,6 +45,16 @@ class Polluter
 
     void randMove( Town& town );
 
+    //Desc:
+    //Pre: 
+    //Post: 
+    int getPosX() const {return m_X;}
+    
+    //Desc:
+    //Pre:
+    //Post:
+    int getPosY() const {return m_Y;} 
+
   private:
     int m_X; // x coordinate
     int m_Y; // y coordinate

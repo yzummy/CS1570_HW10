@@ -21,6 +21,12 @@ const float MAX_TOXICITY = 3;
 const int MAX_DIGNITY = 100;
 // min possible dignity
 const int MIN_DIGNITY = 0;
+// lowest dignity before gone
+const int GONE_DIGNITY = 0;
+// cool state toxicity
+const float COOL_TOXICITY = 0.08;
+// gone state toxicity
+const float GONE_TOXICITY = 0.25;
 
 // possible states
 const short STATE_NORMAL = 0; // activist is normal
@@ -70,6 +76,34 @@ class Activist
 
     void randMove( Town& town );
 
+    //Desc:
+    //Pre:
+    //Post:
+    
+    void smartMove(Town & town, const int x, const int y);
+ 
+    //Desc:
+    //Pre:
+    //Post:
+    void move(Town & town, const int pol_x, const int pol_y);
+
+    
+    //Desc:
+    //Pre:
+    //Post:
+    
+    void collide(Town & town, const int x, const int y);
+    
+    //Desc:
+    //Pre:
+    //Post:    
+    void setState(const short state);    
+    
+    //Desc:
+    //Pre:
+    //Post:
+    Activist & operator+=(const root & rt);
+        
   private:
     //Desc: The setPos( ) function sets an activist to the pos (x, y) in
     //   the town grid and clears their last pos.
@@ -87,6 +121,7 @@ class Activist
     int m_Dignity; // amount of dignity
     float m_Toxicity; // toxicity level
     string m_Name; // name
+    bool overCop; // if activist is with a cop
 };
 
 #endif

@@ -7,6 +7,9 @@
 */
 
 #include "activist.h"
+#include "root.h"
+#include "polluter.h"
+#include "town.h"
 #include <cstdlib>
 
 using namespace std;
@@ -17,7 +20,8 @@ Activist::Activist( const string name, const char symbol )
   m_Symbol( symbol ),
   m_Dignity( DEFAULT_DIGNITY ),
   m_Toxicity( DEFAULT_TOXICITY ),
-  m_Name( name )
+  m_Name( name ),
+  overCop( false )
 {
 }
 
@@ -49,7 +53,12 @@ void Activist::placeMeInMiddle( Town& town )
 void Activist::randMove( Town& town )
 {
   int x = 0, y = 0;
-
+  
+  if(overCop)
+  {
+    town.setGridAt(m_X, m_Y, DEFAULT_COP_SYMBOL);  
+    overCop = false;
+  }
   do
   {
     // add -1, 0, or 1 to current x coord
@@ -57,11 +66,143 @@ void Activist::randMove( Town& town )
     // add -1, 0, or 1 to current y coord
     y = m_Y + ( rand() % 3 - 1 );
     // while coordinates are invalid or collision is detected
-  } while( !town.isWithinGrid( x, y ) || !town.isGridEmptyAt( x, y ) );
+  } 
+  while( (x == m_X && y == m_Y) || !town.isWithinGrid( x, y ) );
 
-  // update position in town
-  setPos( town, x, y );
+          cout << "original: " << m_X << " " << m_Y << endl;
+          cout << "new: " << x << " " << y << endl;
+
+  
+  if(town.isGridEmptyAt(x, y))
+    setPos(town, x, y);
+  else
+    collide(town, x, y);
   return;
+}
+
+
+void Activist::smartMove(Town& town, const int pol_x, const int pol_y)
+{
+  int x = m_X, y = m_Y;
+  
+  if(overCop)
+  {
+    town.setGridAt(m_X, m_Y, DEFAULT_COP_SYMBOL);
+    overCop = false;
+  }
+  if(pol_x < m_X && pol_y > m_Y)
+  {
+    x = m_X - 1;
+    y = m_Y + 1;
+  }
+  else if(pol_x < m_X && pol_y < m_Y)
+  {
+    x = m_X - 1;
+    y = m_Y - 1;
+  }
+  else if(pol_x > m_X && pol_y > m_Y)
+  {
+    x = m_X + 1;
+    y = m_Y + 1; 
+  }
+  else if(pol_x > m_X && pol_y < m_Y)
+  {
+    x = m_X + 1;
+    y = m_Y - 1;
+  }
+  else if(pol_x < m_X && pol_y == m_Y)
+  {
+    x = m_X - 1;
+  }
+  else if(pol_x > m_X && pol_y == m_Y)
+  {
+    x = m_X + 1;
+  }
+  else if(pol_x == m_X && pol_y < m_Y)
+  {
+    y = m_Y - 1;
+  }
+  else if(pol_x == m_X && pol_y > m_Y)
+  {
+    y = m_Y + 1;
+  }
+  
+          cout << "original: " << m_X << " " << m_Y << endl;
+          cout << "new: " << x << " " << y << endl;
+  
+  if(town.isGridEmptyAt(x, y))
+    setPos(town, x, y);
+  else
+    collide(town, x, y);
+  
+  return; 
+}
+
+void Activist::move(Town & town, const int pol_x, const int pol_y)
+{
+  if(m_State)
+    randMove(town);
+  else
+    smartMove(town, pol_x, pol_y);    
+  return;  
+}
+
+void Activist::collide(Town & town, const int x, const int y)
+{
+ switch(town.getGridAt(x, y))
+ {
+   case TOWN_WALL_CHAR:
+     m_Dignity -= town.getDigLossWall();
+                                          cout << "dignity lost" << endl;     
+     break;
+   case TOWN_EXIT_CHAR:
+     setState(STATE_GONE);
+     break;
+   case POLLUTER_DEFAULT_SYMBOL:
+     // TO-DO win the day
+     setState(STATE_GONE);
+     break;
+   case DEFAULT_COP_SYMBOL:
+     setPos(town, x, y);
+     overCop = true;
+     m_Dignity -= town.getDigLossCop();
+     if(m_Dignity <= GONE_DIGNITY)
+       setState(STATE_GONE);
+     break;
+   case ROOT_SYMBOL:
+     setPos(town, x, y);
+     *this += town.getArrRoot(town.getNumRoots()-1);
+                                                     cout << "nth Root: "  << town.getNumRoots()-1 << endl;
+     town.setNumRoots(town.getNumRoots()-2);
+     if(m_Toxicity >= COOL_TOXICITY)
+     {  
+       setState(STATE_COOL);
+                                       cout << " Current Toxicity: " << m_Toxicity 
+                                       << "\n Ccoool one: " << COOL_TOXICITY
+                                        <<"\nset to coooooooool   !!!!!!!!" << endl;
+     }
+     else if(m_Toxicity >= GONE_TOXICITY)
+       setState(STATE_GONE);
+     else
+       setState(STATE_NORMAL);
+     break; 
+   default:
+     break;   
+      
+ }
+ return;
+}
+
+void Activist::setState(const short state)
+{
+  m_State = state;
+  return;
+}
+
+Activist & Activist::operator+=(const root & rt)
+{
+  m_Toxicity += rt.getEffVal();  
+  return *this;
 }
 
 ostream& operator<<( ostream& os, const Activist& activist )
