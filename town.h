@@ -136,7 +136,6 @@ class Town
 
     char getGridAt( const int x, const int y ) const;
 
-
   private:
     char  m_Grid[TOWN_MAX_DIM][TOWN_MAX_DIM]; // grid representing town
     short m_MaxDimUsed; // max dimensions of town that are actually in use

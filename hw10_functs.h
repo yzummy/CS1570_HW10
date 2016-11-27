@@ -12,11 +12,15 @@
 #include <fstream>
 #include <cstdlib>
 #include <ctime>
+#include "town.h"
+#include "activist.h"
+#include "polluter.h"
+#include "root.h"
 using namespace std;
 
 // configuration data file name
 const char CONFIG[] = "config.dat";
-
+const short numStats = 5;
 // Desc: The openFile() function opens a stream given a fileName.
 // Pre:  T is of type ifstream or ofstream
 //       If T is of type ifstream, the file referred to by fileName must exist.
@@ -42,6 +46,14 @@ void openFile( T& fileIn, const char fileName[] )
 // Pre:
 // Post:
 
-void runSimulation( );
+void runSimulation(const short gridSize, const short numRoots, 
+                   const short numCops, const short numPtsLostWall, 
+                   const short numPtsLostCop, float stat[]);
+
+// Desc:
+// Pre:
+// Post:
+
+void showPercentage(const float num, const short totNum);
 
 #endif

@@ -102,6 +102,21 @@ class Activist
     //Desc:
     //Pre:
     //Post:
+    short getState() const {return m_State;}
+    
+    //Desc:
+    //Pre:
+    //Post:
+    short getResult() const {return result;}
+    
+    //Desc:
+    //Pre:
+    //Post:
+    float getToxicity() const {return m_Toxicity;}
+    
+    //Desc:
+    //Pre:
+    //Post:
     Activist & operator+=(const root & rt);
         
   private:
@@ -122,6 +137,8 @@ class Activist
     float m_Toxicity; // toxicity level
     string m_Name; // name
     bool overCop; // if activist is with a cop
+    short result; // how the day ended (0: exit, 1: gone on roots,
+                  // 2: caught polluter, 3: death by loss of dignity)
 };
 
 #endif

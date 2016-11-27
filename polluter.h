@@ -10,6 +10,7 @@
 #define POLLUTER_H
 
 #include "town.h"
+#include "activist.h"
 using namespace std;
 
 // default x/y coordinate value
@@ -55,12 +56,17 @@ class Polluter
     //Post:
     int getPosY() const {return m_Y;} 
 
+    //Desc:
+    //Pre:
+    //Post:
+    bool getCaughtStatus() const {return isCaught;}
   private:
     int m_X; // x coordinate
     int m_Y; // y coordinate
     char m_Symbol; // character representation on grid
     string m_Name; // name
-
+    bool isCaught;
+    
     //Desc: The setPos( ) function sets a polluter to the pos (x, y) in
     //   the town grid and clears their last pos.
     //Pre: (x, y) is a valid pos in the town's grid.

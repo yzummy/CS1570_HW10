@@ -53,12 +53,7 @@ void Activist::placeMeInMiddle( Town& town )
 void Activist::randMove( Town& town )
 {
   int x = 0, y = 0;
-  
-  if(overCop)
-  {
-    town.setGridAt(m_X, m_Y, DEFAULT_COP_SYMBOL);  
-    overCop = false;
-  }
+                                                    
   do
   {
     // add -1, 0, or 1 to current x coord
@@ -71,12 +66,18 @@ void Activist::randMove( Town& town )
 
           cout << "original: " << m_X << " " << m_Y << endl;
           cout << "new: " << x << " " << y << endl;
+  if(overCop)
+  {
+    town.setGridAt(m_X, m_Y, DEFAULT_COP_SYMBOL);  
+                                                   cout << DEFAULT_COP_SYMBOL << "~~~~Cop reset~~~~" << endl;
+    overCop = false;
+  }
 
-  
-  if(town.isGridEmptyAt(x, y))
-    setPos(town, x, y);
-  else
+  if(town.getGridAt(x, y) == DEFAULT_COP_SYMBOL || !town.isGridEmptyAt(x, y))
     collide(town, x, y);
+  else
+    setPos(town, x, y);
+
   return;
 }
 
@@ -88,6 +89,7 @@ void Activist::smartMove(Town& town, const int pol_x, const int pol_y)
   if(overCop)
   {
     town.setGridAt(m_X, m_Y, DEFAULT_COP_SYMBOL);
+                                                   cout << "~~~~Cop reset~~~~" << endl;
     overCop = false;
   }
   if(pol_x < m_X && pol_y > m_Y)
@@ -129,17 +131,25 @@ void Activist::smartMove(Town& town, const int pol_x, const int pol_y)
   
           cout << "original: " << m_X << " " << m_Y << endl;
           cout << "new: " << x << " " << y << endl;
+  if(overCop)
+  {
+    town.setGridAt(m_X, m_Y, DEFAULT_COP_SYMBOL);  
+                                                   cout << DEFAULT_COP_SYMBOL << "~~~~Cop reset~~~~" << endl;
+    overCop = false;
+  }
   
-  if(town.isGridEmptyAt(x, y))
-    setPos(town, x, y);
-  else
+      
+  if(town.getGridAt(x, y) == DEFAULT_COP_SYMBOL || !town.isGridEmptyAt(x, y))
     collide(town, x, y);
-  
+  else
+    setPos(town, x, y);
   return; 
 }
 
 void Activist::move(Town & town, const int pol_x, const int pol_y)
 {
+                                  cout << "is over cop:  " << overCop << endl;
+
   if(m_State)
     randMove(town);
   else
@@ -154,35 +164,44 @@ void Activist::collide(Town & town, const int x, const int y)
    case TOWN_WALL_CHAR:
      m_Dignity -= town.getDigLossWall();
                                           cout << "dignity lost" << endl;     
+     if(m_Dignity <= GONE_DIGNITY)
+     {
+       setState(STATE_GONE);
+       result = 3;
+     }     
      break;
    case TOWN_EXIT_CHAR:
+     result = 0;
      setState(STATE_GONE);
      break;
    case POLLUTER_DEFAULT_SYMBOL:
-     // TO-DO win the day
+     setPos(town, x, y);
      setState(STATE_GONE);
+     result = 2;
      break;
    case DEFAULT_COP_SYMBOL:
      setPos(town, x, y);
+                                           cout << "dignity lost" << endl;
      overCop = true;
      m_Dignity -= town.getDigLossCop();
      if(m_Dignity <= GONE_DIGNITY)
+     {
        setState(STATE_GONE);
+       result = 3;
+     }
      break;
    case ROOT_SYMBOL:
      setPos(town, x, y);
      *this += town.getArrRoot(town.getNumRoots()-1);
                                                      cout << "nth Root: "  << town.getNumRoots()-1 << endl;
-     town.setNumRoots(town.getNumRoots()-2);
-     if(m_Toxicity >= COOL_TOXICITY)
-     {  
-       setState(STATE_COOL);
-                                       cout << " Current Toxicity: " << m_Toxicity 
-                                       << "\n Ccoool one: " << COOL_TOXICITY
-                                        <<"\nset to coooooooool   !!!!!!!!" << endl;
-     }
-     else if(m_Toxicity >= GONE_TOXICITY)
+     town.setNumRoots(town.getNumRoots()-1);
+     if(m_Toxicity >= GONE_TOXICITY)
+     {
        setState(STATE_GONE);
+       result = 1;
+     }
+     else if(m_Toxicity >= COOL_TOXICITY)
+       setState(STATE_COOL);
      else
        setState(STATE_NORMAL);
      break; 
@@ -190,6 +209,11 @@ void Activist::collide(Town & town, const int x, const int y)
      break;   
       
  }
+ 
+ // Dies of supreme indignity
+ if(m_Dignity <= 0)
+   setState(STATE_GONE);
+ 
  return;
 }
 

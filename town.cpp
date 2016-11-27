@@ -144,7 +144,8 @@ char Town::getGridAt( const int x, const int y ) const
 bool Town::isGridEmptyAt( const int x, const int y ) const
 {
   // is grid empty at given coordinates?
-  return getGridAt( x, y ) == TOWN_EMPTY_SPACE;
+  return getGridAt( x, y ) == TOWN_EMPTY_SPACE 
+          || getGridAt(x, y) == DEFAULT_COP_SYMBOL;
 }
 
 ostream& operator<<( ostream& os, const Town& town )
