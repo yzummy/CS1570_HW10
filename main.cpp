@@ -6,64 +6,45 @@
 */
 
 #include "hw10_functs.h"
+#include "config.h"
 #include "town.h"
 #include "activist.h"
 #include "polluter.h"
 #include "root.h"
-#include <iomanip>
 using namespace std;
 
 int main()
 {
-  ifstream config;
-  short gridSize = 0;
-  short numRoots = 0;
-  short numCops = 0;
-  short numDays = 0;
-  short numPtsLostForWallCollision = 0;
-  short numPtsLostForTalkingToCop = 0;
-  float stat[numStats];
-  srand(time(NULL));
-  
-  
-  openFile( config, CONFIG );
-  config >> gridSize >> numRoots >> numCops >> numDays
-         >> numPtsLostForWallCollision >> numPtsLostForTalkingToCop;
-
-  cout << gridSize << " " << numRoots << " " << numCops << " " << numDays
-       << " " << numPtsLostForWallCollision << " "
-       << numPtsLostForTalkingToCop << endl;
-  
-  for(int i = 0; i < numStats; i++)
-    stat[i] = 0;
-  
-  for(int i = 0; i < numDays; i++)
+  Config config( CONFIG_FILE_NAME );
+  float stat[NUM_STATS] = { 0 };
+  const string statDesc[] =
   {
-    runSimulation(gridSize, numRoots, numCops, 
-                  numPtsLostForWallCollision, 
-                  numPtsLostForTalkingToCop, stat);                  
-  }
-  
+    " Percentage of Exits                   : ",
+    " Percentage of becoming wacked out     : ",
+    " Percentage of catching the polluter   : ",
+    " Percentage of death by loss of dignity: ",
+    " Average toxicity when day is done     : "
+  };
+
+  srand( time( NULL ) );
+
+  /*
+  for( int i = 0; i < config.numDays; i++ )
+    runSimulation( config, stat );
+  */
+
   //***** Print out stats
   cout << "\nSimulation Stats Report: " << endl;
-  cout << " Percentage of Exits                   : "; 
-  showPercentage(stat[0], numDays);
-  cout << " Percentage of becoming wacked out     : ";
-  showPercentage(stat[1], numDays);
-  cout << " Percentage of catching the polluter   : ";
-  showPercentage(stat[2], numDays);
-  cout << " Percentage of death by loss of dignity: ";
-  showPercentage(stat[3], numDays);
-  cout << " Average toxicity when day is done     : "
-       << setprecision(5) << stat[4] / numDays << endl;
-  for(int i = 0; i < numStats; i++)
-  {
-    cout << "~~i: " << stat[i] << endl;
-  }
-  cout << "num of days: " << numDays  << endl;
 
-  
-  
-    
+  for( int i = 0; i < NUM_STATS; i++ )
+  {
+    cout << statDesc[i];
+
+    if ( i < NUM_STATS - 1 )
+      showPercentage( stat[i], config.numDays );
+    else
+      cout << stat[4] / config.numDays << endl;
+  }
+
   return 0;
 }

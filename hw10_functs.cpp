@@ -17,50 +17,48 @@ void showPercentage(const float num, const short totNum)
   return;
 }
 
-void runSimulation(const short gridSize, const short numRoots, 
-                   const short numCops, const short numPtsLostWall,
-                   const short numPtsLostCop, float stat[])
+void runSimulation( const Config& config, float stat[])
 {
   //***** Construction of Town
-  Town town(gridSize);
+  Town town( config.gridSize );
   cout << "\nInitial look of the town:\n" << endl;
   cout << town << endl;
-  town.setDigLossCop(numPtsLostCop);
-  town.setDigLossWall(numPtsLostWall);
-  
+  town.setDigLossCop( config.numPtsLostForTalkingToCop );
+  town.setDigLossWall( config.numPtsLostForWallCollision );
+
   //***** Declare and place Activist
   Activist lisa("Lisa");
   cout << "\nInitial look of Activist: \n" << endl;
   cout << lisa << endl;
-  
+
   lisa.placeMeInMiddle(town);
   cout << "\nPlace activist in middle of town: \n" << endl;
   cout << town << endl;
-  
+
   //***** Declare and place Polluter
   Polluter homer("Homer");
   homer.placeMe(town);
   cout << "Town after randomly placing a Polluter:\n" << endl;
   cout << town << endl;
-  
+
   //***** Initilize and place roots and cops
-  town.initRoot(numRoots);
-  town.initCops(numCops);
-  
+  town.initRoot( config.numRoots);
+  town.initCops( config.numCops );
+
   //***** Let activist and polluter move
   do
   {
     if(!homer.getCaughtStatus())
     {
       homer.randMove(town);
-      cout << "~~~~~~~homer status: " << homer.getCaughtStatus() << endl;  
+      cout << "~~~~~~~homer status: " << homer.getCaughtStatus() << endl;
     }
     lisa.move(town, homer.getPosX(), homer.getPosY());
                                                       cout << town << endl;
                                                       cout << lisa << endl;
-              
+
   }while(lisa.getState() != STATE_GONE);
-  
+
   stat[4] += lisa.getToxicity();
   switch(lisa.getResult())
   {
@@ -79,5 +77,5 @@ void runSimulation(const short gridSize, const short numRoots,
     default:
       break;
   }
-    
+
 }
