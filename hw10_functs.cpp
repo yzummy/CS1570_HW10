@@ -48,35 +48,37 @@ void runSimulation( const Config& config, SimulationStat stats[] )
   return;
 }
 
-#include <windows.h>
-#define WIN32_LEAN_AND_MEAN
+#ifdef WIN32
+  #include <windows.h>
+  #define WIN32_LEAN_AND_MEAN
 
-void debugSetConsoleCursorPos( const short x, const short y )
-{
-  static const HANDLE output = GetStdHandle( STD_OUTPUT_HANDLE );
-  COORD pos = { x, y };
-  SetConsoleCursorPosition( output, pos );
-}
-
-void debugRunSimulation( const Config& config )
-{
-  Town town( config, config.gridSize );
-  Activist lisa( "Lisa" );
-  Polluter homer( "Homer" );
-
-  lisa.placeMeInMiddle( town );
-  homer.placeMe( town );
-
-  do
+  void debugSetConsoleCursorPos( const short x, const short y )
   {
-    homer.randMove(town);
-    lisa.move( town, homer.getPos( ) );
+    static const HANDLE output = GetStdHandle( STD_OUTPUT_HANDLE );
+    COORD pos = { x, y };
+    SetConsoleCursorPosition( output, pos );
+  }
 
-    cout << town << endl;
+  void debugRunSimulation( const Config& config )
+  {
+    Town town( config, config.gridSize );
+    Activist lisa( "Lisa" );
+    Polluter homer( "Homer" );
 
-    Sleep( 500 );
-    debugSetConsoleCursorPos( 0, 0 );
-  } while( !lisa.isInactive( ) );
+    lisa.placeMeInMiddle( town );
+    homer.placeMe( town );
 
-  return;
-}
+    do
+    {
+      homer.randMove(town);
+      lisa.move( town, homer.getPos( ) );
+
+      cout << town << endl;
+
+      Sleep( 500 );
+      debugSetConsoleCursorPos( 0, 0 );
+    } while( !lisa.isInactive( ) );
+
+    return;
+  }
+#endif
