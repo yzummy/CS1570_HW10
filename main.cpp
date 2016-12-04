@@ -6,44 +6,43 @@
 */
 
 #include "hw10_functs.h"
-#include "config.h"
-#include "town.h"
-#include "activist.h"
-#include "polluter.h"
-#include "root.h"
-using namespace std;
 
 int main()
 {
-  Config config( CONFIG_FILE_NAME );
-  float stat[NUM_STATS] = { 0 };
-  const string statDesc[] =
+  Config config( CONFIG_FILE_NAME ); // config file object
+  SimulationStat stats[NUM_STATS] = // array of simulation stat objecs.
   {
-    " Percentage of Exits                   : ",
-    " Percentage of becoming wacked out     : ",
-    " Percentage of catching the polluter   : ",
-    " Percentage of death by loss of dignity: ",
-    " Average toxicity when day is done     : "
+    //           stat desc                     show as percent
+    { "\tActivist exited and got caught by the EPA : ", true },
+    { "\tActivist became wacked out                : ", true },
+    { "\tActivist successfully caught the polluter : ", true },
+    { "\tActivist died by loss of dignity          : ", true },
+    { "\tAverage toxicity when day is done         : " }
   };
 
+  // set numDays for each SimulationStat object.
+  SimulationStat::numDays = config.numDays;
+
+  // set the static members of the town class
+  Town::numPtsLostForCop = config.numPtsLostForCop;
+  Town::numPtsLostForWall = config.numPtsLostForWall;
+
+  // initialize pseudo random number generator
   srand( time( NULL ) );
 
-  /*
-  for( int i = 0; i < config.numDays; i++ )
-    runSimulation( config, stat );
-  */
-
-  //***** Print out stats
-  cout << "\nSimulation Stats Report: " << endl;
-
-  for( int i = 0; i < NUM_STATS; i++ )
+  if ( DEBUG )
+    debugRunSimulation( config );
+  else // run simulation for the number of days set by the config file
   {
-    cout << statDesc[i];
+    for ( int i = 0; i < config.numDays; i++ )
+      runSimulation( config, stats );
 
-    if ( i < NUM_STATS - 1 )
-      showPercentage( stat[i], config.numDays );
-    else
-      cout << stat[4] / config.numDays << endl;
+    // print out stats
+    cout << "\nSimulation Statistics (percentages signify the percent of "
+         << "simulated days that something occurs)" << endl;
+
+    for( int i = 0; i < NUM_STATS; i++ )
+      cout << stats[i] << endl;
   }
 
   return 0;

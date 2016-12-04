@@ -8,27 +8,38 @@
 #ifndef HW10_FUNCTS_H
 #define HW10_FUNCTS_H
 
-#include <iostream>
-#include <fstream>
-#include <cstdlib>
 #include <ctime>
 #include "config.h"
 #include "town.h"
 #include "activist.h"
 #include "polluter.h"
-#include "root.h"
 using namespace std;
 
+const short TOXICITY_STAT = 4;
+const bool DEBUG = false;
+
+struct SimulationStat
+{
+  string desc;
+  bool showAsPercent;
+  float val;
+
+  static short numDays;
+
+  // Desc:
+  // Pre:
+  // Post:
+
+  friend ostream& operator<<( ostream& os, const SimulationStat& stat );
+};
+
 // Desc:
 // Pre:
 // Post:
 
-void runSimulation( const Config& config, float stat[]);
+void runSimulation( const Config& config, SimulationStat stats[] );
 
-// Desc:
-// Pre:
-// Post:
-
-void showPercentage(const float num, const short totNum);
+void debugSetConsoleCursorPos( const short x, const short y );
+void debugRunSimulation( const Config& config );
 
 #endif

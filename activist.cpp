@@ -7,225 +7,118 @@
 */
 
 #include "activist.h"
-#include "root.h"
-#include "polluter.h"
-#include "town.h"
-#include <cstdlib>
-
-using namespace std;
 
 Activist::Activist( const string name, const char symbol )
-: m_X( DEFAULT_POS ), m_Y( DEFAULT_POS ),
+: m_Pos( DEFAULT_POS, DEFAULT_POS ),
   m_State( STATE_NORMAL ),
   m_Symbol( symbol ),
   m_Dignity( DEFAULT_DIGNITY ),
   m_Toxicity( DEFAULT_TOXICITY ),
   m_Name( name ),
-  overCop( false )
+  m_Result( 0 ),
+  m_OverCop( false )
 {
 }
 
-void Activist::setPos( Town& town, const int x, const int y )
+void Activist::setPos( Town& town, const Point<int>& pos )
 {
-  // clear activist's last pos in grid if applicable
-  if ( town.isWithinGrid( m_X, m_Y ) )
-    town.setGridAt( m_X, m_Y );
+  char collidedWith = handleCollision( town, pos );
 
-  // set activist to pos
-  m_X = x;
-  m_Y = y;
-  town.setGridAt( x, y, m_Symbol );
+  if ( collidedWith != TOWN_WALL_CHAR )
+  {
+    if ( town.isWithinGrid( m_Pos ) )
+    {
+      town.setGridAt( m_Pos, m_OverCop ? TOWN_COP_CHAR : TOWN_EMPTY_SPACE );
+      m_OverCop = false;
+    }
+
+    if ( town.getGridAt( pos ) == TOWN_COP_CHAR )
+      m_OverCop = true;
+
+    m_Pos.setPos( pos.getX( ), pos.getY( ) );
+    town.setGridAt( pos, m_Symbol );
+  }
 
   return;
 }
 
 void Activist::placeMeInMiddle( Town& town )
 {
-  // get x and y midpoint
-  const int mid = town.getMaxDimUsed( ) / 2;
-
-  // update position in town
-  setPos( town, mid, mid );
+  const Point<int> mid( town.getMaxDimUsed( ) / 2, town.getMaxDimUsed( ) / 2 );
+  setPos( town, mid );
 
   return;
 }
 
 void Activist::randMove( Town& town )
 {
-  int x = 0, y = 0;
-                                                    
-  do
-  {
-    // add -1, 0, or 1 to current x coord
-    x = m_X + ( rand() % 3 - 1 );
-    // add -1, 0, or 1 to current y coord
-    y = m_Y + ( rand() % 3 - 1 );
-    // while coordinates are invalid or collision is detected
-  } 
-  while( (x == m_X && y == m_Y) || !town.isWithinGrid( x, y ) );
-
-          cout << "original: " << m_X << " " << m_Y << endl;
-          cout << "new: " << x << " " << y << endl;
-  if(overCop)
-  {
-    town.setGridAt(m_X, m_Y, DEFAULT_COP_SYMBOL);  
-                                                   cout << DEFAULT_COP_SYMBOL << "~~~~Cop reset~~~~" << endl;
-    overCop = false;
-  }
-
-  if(town.getGridAt(x, y) == DEFAULT_COP_SYMBOL || !town.isGridEmptyAt(x, y))
-    collide(town, x, y);
-  else
-    setPos(town, x, y);
+  Point<int> newPos = m_Pos.randMove( );
+  setPos( town, newPos );
 
   return;
 }
 
-
-void Activist::smartMove(Town& town, const int pol_x, const int pol_y)
+void Activist::smartMove( Town& town, const Point<int>& polluterPos )
 {
-  int x = m_X, y = m_Y;
-  
-  if(overCop)
-  {
-    town.setGridAt(m_X, m_Y, DEFAULT_COP_SYMBOL);
-                                                   cout << "~~~~Cop reset~~~~" << endl;
-    overCop = false;
-  }
-  if(pol_x < m_X && pol_y > m_Y)
-  {
-    x = m_X - 1;
-    y = m_Y + 1;
-  }
-  else if(pol_x < m_X && pol_y < m_Y)
-  {
-    x = m_X - 1;
-    y = m_Y - 1;
-  }
-  else if(pol_x > m_X && pol_y > m_Y)
-  {
-    x = m_X + 1;
-    y = m_Y + 1; 
-  }
-  else if(pol_x > m_X && pol_y < m_Y)
-  {
-    x = m_X + 1;
-    y = m_Y - 1;
-  }
-  else if(pol_x < m_X && pol_y == m_Y)
-  {
-    x = m_X - 1;
-  }
-  else if(pol_x > m_X && pol_y == m_Y)
-  {
-    x = m_X + 1;
-  }
-  else if(pol_x == m_X && pol_y < m_Y)
-  {
-    y = m_Y - 1;
-  }
-  else if(pol_x == m_X && pol_y > m_Y)
-  {
-    y = m_Y + 1;
-  }
-  
-          cout << "original: " << m_X << " " << m_Y << endl;
-          cout << "new: " << x << " " << y << endl;
-  if(overCop)
-  {
-    town.setGridAt(m_X, m_Y, DEFAULT_COP_SYMBOL);  
-                                                   cout << DEFAULT_COP_SYMBOL << "~~~~Cop reset~~~~" << endl;
-    overCop = false;
-  }
-  
-      
-  if(town.getGridAt(x, y) == DEFAULT_COP_SYMBOL || !town.isGridEmptyAt(x, y))
-    collide(town, x, y);
-  else
-    setPos(town, x, y);
-  return; 
-}
+  Point<int> newPos = m_Pos.moveTowards( polluterPos );
+  setPos( town, newPos );
 
-void Activist::move(Town & town, const int pol_x, const int pol_y)
-{
-                                  cout << "is over cop:  " << overCop << endl;
-
-  if(m_State)
-    randMove(town);
-  else
-    smartMove(town, pol_x, pol_y);    
-  return;  
-}
-
-void Activist::collide(Town & town, const int x, const int y)
-{
- switch(town.getGridAt(x, y))
- {
-   case TOWN_WALL_CHAR:
-     m_Dignity -= town.getDigLossWall();
-                                          cout << "dignity lost" << endl;     
-     if(m_Dignity <= GONE_DIGNITY)
-     {
-       setState(STATE_GONE);
-       result = 3;
-     }     
-     break;
-   case TOWN_EXIT_CHAR:
-     result = 0;
-     setState(STATE_GONE);
-     break;
-   case POLLUTER_DEFAULT_SYMBOL:
-     setPos(town, x, y);
-     setState(STATE_GONE);
-     result = 2;
-     break;
-   case DEFAULT_COP_SYMBOL:
-     setPos(town, x, y);
-                                           cout << "dignity lost" << endl;
-     overCop = true;
-     m_Dignity -= town.getDigLossCop();
-     if(m_Dignity <= GONE_DIGNITY)
-     {
-       setState(STATE_GONE);
-       result = 3;
-     }
-     break;
-   case ROOT_SYMBOL:
-     setPos(town, x, y);
-     *this += town.getArrRoot(town.getNumRoots()-1);
-                                                     cout << "nth Root: "  << town.getNumRoots()-1 << endl;
-     town.setNumRoots(town.getNumRoots()-1);
-     if(m_Toxicity >= GONE_TOXICITY)
-     {
-       setState(STATE_GONE);
-       result = 1;
-     }
-     else if(m_Toxicity >= COOL_TOXICITY)
-       setState(STATE_COOL);
-     else
-       setState(STATE_NORMAL);
-     break; 
-   default:
-     break;   
-      
- }
- 
- // Dies of supreme indignity
- if(m_Dignity <= 0)
-   setState(STATE_GONE);
- 
- return;
-}
-
-void Activist::setState(const short state)
-{
-  m_State = state;
   return;
 }
 
-Activist & Activist::operator+=(const root & rt)
+void Activist::move( Town& town, const Point<int>& polluterPos )
 {
-  m_Toxicity += rt.getEffVal();  
+  if ( !isInactive( ) )
+  {
+    if ( m_State == STATE_NORMAL )
+      smartMove( town, polluterPos );
+    else
+      randMove( town );
+  }
+
+  return;
+}
+
+char Activist::handleCollision( Town& town, const Point<int>& pos )
+{
+  const char charAtPos = town.getGridAt( pos );
+
+  if ( !town.isGridEmptyAt( pos ) )
+  {
+    if ( charAtPos == TOWN_COP_CHAR )
+      m_Dignity -= town.numPtsLostForCop;
+    else if ( charAtPos == TOWN_WALL_CHAR )
+      m_Dignity -= town.numPtsLostForWall;
+    else if ( charAtPos == TOWN_EXIT_CHAR )
+      m_Result = RESULT_EXITED;
+    else if ( charAtPos == POLLUTER_DEFAULT_SYMBOL )
+      m_Result = RESULT_CAUGHT_POLLUTER;
+    else if ( charAtPos == ROOT_CHAR )
+    {
+      ( *this ) += town.getNextRoot( );
+
+      if ( m_State == STATE_GONE )
+        m_Result = RESULT_GONE;
+    }
+
+    if ( m_Dignity <= 0 )
+      m_Result = RESULT_DEATH_BY_LOSS_OF_DIGNITY;
+  }
+
+  return ( charAtPos == TOWN_EMPTY_SPACE ? 0 : charAtPos );
+}
+
+Activist& Activist::operator+=( const Root& root )
+{
+  m_Toxicity += root.getEffVal( );
+
+  if ( m_Toxicity < COOL_TOXICITY )
+    m_State = STATE_NORMAL;
+  else if ( m_Toxicity >= COOL_TOXICITY && m_Toxicity < GONE_TOXICITY )
+    m_State = STATE_COOL;
+  else if ( m_Toxicity >= GONE_TOXICITY )
+    m_State = STATE_GONE;
+
   return *this;
 }
 
@@ -236,26 +129,18 @@ ostream& operator<<( ostream& os, const Activist& activist )
   // convert integer state representation to string
   switch( activist.m_State )
   {
-    case STATE_NORMAL:
-      state = "normal";
-    break;
-
-    case STATE_COOL:
-      state = "cool";
-    break;
-
-    case STATE_GONE:
-      state = "gone";
-    break;
+    case STATE_NORMAL: state = "normal"; break;
+    case STATE_COOL:   state = "cool";   break;
+    case STATE_GONE:   state = "gone";   break;
   }
 
   // print object to stream
-  os << "Position: ( " << activist.m_X << ", " << activist.m_Y << " )"
-       << endl << "State: " << state << endl
-       << "Symbol: '" << activist.m_Symbol << "'" << endl
-       << "Dignity: " << activist.m_Dignity << endl
-       << "Toxicity: " << activist.m_Toxicity << endl
-       << "Name: " << activist.m_Name;
+  os << "Position: " << activist.m_Pos << endl
+     << "State: " << state << endl
+     << "Symbol: '" << activist.m_Symbol << "'" << endl
+     << "Dignity: " << activist.m_Dignity << endl
+     << "Toxicity: " << activist.m_Toxicity << endl
+     << "Name: " << activist.m_Name;
 
   return os;
 }

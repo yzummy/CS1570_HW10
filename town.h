@@ -11,6 +11,8 @@
 
 #include <iostream>
 #include "root.h"
+#include "point.h"
+#include "config.h"
 using namespace std;
 
 // max width/height of town
@@ -20,7 +22,7 @@ const char TOWN_WALL_CHAR = 'W';
 // char representing exit
 const char TOWN_EXIT_CHAR = 'E';
 // char representing cop
-const char DEFAULT_COP_SYMBOL = 'C';
+const char TOWN_COP_CHAR = 'C';
 // empty space in town
 const char TOWN_EMPTY_SPACE = ' ';
 // grid character separator
@@ -31,13 +33,18 @@ const int MAX_NUM_ROOTS = 20;
 class Town
 {
   public:
+    // num dignity points lost by actor for talking to cop
+    static int numPtsLostForCop;
+     // num dignity points lost by actor for wall collision
+    static int numPtsLostForWall;
+
     //Desc: Constructs empty Town of maxDimUsed x maxDimUsed size
     //Pre:  0 < maxDimUsed <= TOWN_MAX_DIM
     //Post: An empty town of maxDimUsed x maxDimUsed is constructed if
     //   maxDimUsed is within the range specified, otherwise, an error
     //   message is displayed and the program terminates.
 
-    Town( const short maxDimUsed = TOWN_MAX_DIM );
+    Town( const Config& config, short maxDimUsed = TOWN_MAX_DIM );
 
     //Desc: Overloaded insertion operator for Town class, prints out the
     //   the entirety of the town grid to the screen.
@@ -52,7 +59,7 @@ class Town
     //Post: Returns true if the (x, y) coordinate is within the grid,
     //   false otherwise.
 
-    bool isWithinGrid( const int x, const int y ) const;
+    bool isWithinGrid( const Point<int>& pos ) const;
 
     //Desc: The setGridAt() function sets the grid value at (x, y) to the given
     //   symbol, or an empty space if a symbol is not specified.
@@ -61,8 +68,7 @@ class Town
     //   symbol if (x, y) is a valid grid pos, otherwise an error message is
     //   displayed and the program terminates.
 
-    void setGridAt( const int x, const int y,
-                    const char symbol = TOWN_EMPTY_SPACE );
+    void setGridAt( const Point<int>& pos, const char symbol );
 
     //Desc: The isGridEmptyAt() function returns whether or not the town grid
     //   has an empty space at pos (x, y).
@@ -72,54 +78,8 @@ class Town
     //    a valid grid pos, an error message is displayed and the program
     //    terminates.
 
-    bool isGridEmptyAt( const int x, const int y ) const;
+    bool isGridEmptyAt( const Point<int>& pos ) const;
 
-    //Desc:
-    //Pre: 
-    //Post: 
-    void initRoot(const int numRoots);
-    
-    //Desc:
-    //Pre:
-    //Post:
-    root getArrRoot(const int count){return roots[count];}
-    
-    //Desc:
-    //Pre:
-    //Post:
-    void setDigLossWall(const int loss = 0){digLossWall = loss; return;}
-
-    //Desc:
-    //Pre:
-    //Post:
-    int getDigLossWall() const {return digLossWall;}
-    
-    //Desc:
-    //Pre:
-    //Post:
-    void setDigLossCop(const int loss = 0){digLossCop = loss; return;}
-
-    //Desc:
-    //Pre:
-    //Post:
-    int getDigLossCop() const {return digLossCop;}    
-       
-    
-    //Desc:
-    //Pre:
-    //Post:
-    void initCops(const int numCops);    
-
-    //Desc:
-    //Pre:
-    //Post:
-    int getNumRoots() const {return m_numRoots;}
-    
-    //Desc:
-    //Pre:
-    //Post:
-    void setNumRoots(const int num) {m_numRoots=num; return;}
-        
     //Desc: The getMaxDimUsed( ) region returns the max width/height of the
     //   town.
     //Pre:  None.
@@ -134,22 +94,32 @@ class Town
     //   is a valid grid pos, otherwise an error message is displayed and the
     //   the program terminates.
 
-    char getGridAt( const int x, const int y ) const;
+    char getGridAt( const Point<int>& point ) const;
+
+    //Desc:
+    //Pre:
+    //Post:
+
+    Root& getNextRoot( );
+
+    //Desc:
+    //Pre:
+    //Post:
+
+    const Point<int>& getRandPointInGrid( );
 
   private:
     char  m_Grid[TOWN_MAX_DIM][TOWN_MAX_DIM]; // grid representing town
     short m_MaxDimUsed; // max dimensions of town that are actually in use
-    int digLossWall; // dignity lost for hitting a wall
-    int digLossCop; // dignity lost for meeting cops
-    int m_numRoots; // number of roots left
-    int numWin; // numebr of winnings
-    root roots[MAX_NUM_ROOTS]; // array of roots in the town
+    Root m_Roots[MAX_NUM_ROOTS]; // array of roots in the town
+    int m_NumRoots; // number of roots left
+    int m_NumCops;
 
     //Desc: The clear( ) function fills the used region of the town grid with
     //   empty space.
     //Pre:  None.
     //Post: The used region of the town grid is filled with empty space.
-    
+
     void clear( );
 
     //Desc: The build( ) function updates the town grid with the walls and

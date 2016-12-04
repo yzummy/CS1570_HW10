@@ -6,76 +6,77 @@
 */
 
 #include "hw10_functs.h"
-#include <iomanip>
-using namespace std;
 
-void showPercentage(const float num, const short totNum)
+short SimulationStat::numDays = 0;
+
+ostream& operator<<( ostream& os, const SimulationStat& stat )
 {
-  float percent;
-  percent = num / totNum * 100;
-  cout << setprecision(5) << percent << "%" << endl;
+  const float statValPerDay = stat.val / stat.numDays;
+
+  os << stat.desc;
+
+  if ( stat.showAsPercent )
+    os << statValPerDay * 100 << "%";
+  else
+    os << statValPerDay;
+
+  return os;
+}
+
+void runSimulation( const Config& config, SimulationStat stats[] )
+{
+  static int timesCalled = 0;
+
+  Town town( config, config.gridSize );
+  Activist lisa( "Lisa" );
+  Polluter homer( "Homer" );
+
+  lisa.placeMeInMiddle( town );
+  homer.placeMe( town );
+
+  do
+  {
+    homer.randMove(town);
+    lisa.move( town, homer.getPos( ) );
+    if ( !timesCalled ) cout << town << endl;
+  } while( !lisa.isInactive( ) );
+
+  stats[TOXICITY_STAT].val += lisa.getToxicity( );
+  ++stats[lisa.getInactiveState( ) - 1].val;
+  ++timesCalled;
+
   return;
 }
 
-void runSimulation( const Config& config, float stat[])
+#include <windows.h>
+#define WIN32_LEAN_AND_MEAN
+
+void debugSetConsoleCursorPos( const short x, const short y )
 {
-  //***** Construction of Town
-  Town town( config.gridSize );
-  cout << "\nInitial look of the town:\n" << endl;
-  cout << town << endl;
-  town.setDigLossCop( config.numPtsLostForTalkingToCop );
-  town.setDigLossWall( config.numPtsLostForWallCollision );
+  static const HANDLE output = GetStdHandle( STD_OUTPUT_HANDLE );
+  COORD pos = { x, y };
+  SetConsoleCursorPosition( output, pos );
+}
 
-  //***** Declare and place Activist
-  Activist lisa("Lisa");
-  cout << "\nInitial look of Activist: \n" << endl;
-  cout << lisa << endl;
+void debugRunSimulation( const Config& config )
+{
+  Town town( config, config.gridSize );
+  Activist lisa( "Lisa" );
+  Polluter homer( "Homer" );
 
-  lisa.placeMeInMiddle(town);
-  cout << "\nPlace activist in middle of town: \n" << endl;
-  cout << town << endl;
+  lisa.placeMeInMiddle( town );
+  homer.placeMe( town );
 
-  //***** Declare and place Polluter
-  Polluter homer("Homer");
-  homer.placeMe(town);
-  cout << "Town after randomly placing a Polluter:\n" << endl;
-  cout << town << endl;
-
-  //***** Initilize and place roots and cops
-  town.initRoot( config.numRoots);
-  town.initCops( config.numCops );
-
-  //***** Let activist and polluter move
   do
   {
-    if(!homer.getCaughtStatus())
-    {
-      homer.randMove(town);
-      cout << "~~~~~~~homer status: " << homer.getCaughtStatus() << endl;
-    }
-    lisa.move(town, homer.getPosX(), homer.getPosY());
-                                                      cout << town << endl;
-                                                      cout << lisa << endl;
+    homer.randMove(town);
+    lisa.move( town, homer.getPos( ) );
 
-  }while(lisa.getState() != STATE_GONE);
+    cout << town << endl;
 
-  stat[4] += lisa.getToxicity();
-  switch(lisa.getResult())
-  {
-    case 0:
-      stat[0]++;
-      break;
-    case 1:
-      stat[1]++;
-      break;
-    case 2:
-      stat[2]++;
-      break;
-    case 3:
-      stat[3]++;
-      break;
-    default:
-      break;
-  }
+    Sleep( 500 );
+    debugSetConsoleCursorPos( 0, 0 );
+  } while( !lisa.isInactive( ) );
 
+  return;
 }

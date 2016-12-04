@@ -9,8 +9,9 @@
 #ifndef ACTIVIST_H
 #define ACTIVIST_H
 
-#include <iostream>
 #include "town.h"
+#include "point.h"
+#include "polluter.h"
 using namespace std;
 
 // min possible toxicity
@@ -21,8 +22,6 @@ const float MAX_TOXICITY = 3;
 const int MAX_DIGNITY = 100;
 // min possible dignity
 const int MIN_DIGNITY = 0;
-// lowest dignity before gone
-const int GONE_DIGNITY = 0;
 // cool state toxicity
 const float COOL_TOXICITY = 0.08;
 // gone state toxicity
@@ -43,6 +42,11 @@ const char DEFAULT_ACTIVIST_SYMBOL = 'A';
 const int DEFAULT_DIGNITY = MAX_DIGNITY;
 // default toxicity
 const float DEFAULT_TOXICITY = .05;
+
+const int RESULT_EXITED = 1;
+const int RESULT_GONE = 2;
+const int RESULT_CAUGHT_POLLUTER = 3;
+const int RESULT_DEATH_BY_LOSS_OF_DIGNITY = 4;
 
 class Activist
 {
@@ -69,6 +73,56 @@ class Activist
 
     void placeMeInMiddle( Town& town );
 
+    //Desc:
+    //Pre:
+    //Post:
+
+    void move( Town& town, const Point<int>& polluterPos );
+
+    //Desc:
+    //Pre:
+    //Post:
+
+    Activist& operator+=( const Root& root );
+
+    //Desc:
+    //Pre:
+    //Post:
+
+    float getToxicity( ) const { return m_Toxicity; }
+
+    //Desc:
+    //Pre:
+    //Post:
+
+    bool isInactive( ) const { return m_Result; }
+
+    //Desc:
+    //Pre:
+    //Post:
+
+    int getInactiveState( ) const { return m_Result; }
+
+  private:
+
+    Point<int> m_Pos;
+    short m_State; // state (normal, gone, or cool)
+    char m_Symbol; // char representation on grid
+    int m_Dignity; // amount of dignity
+    float m_Toxicity; // toxicity level
+    string m_Name; // name
+    short m_Result; // how the day ended
+    bool  m_OverCop; // was activist over cop.
+
+    //Desc: The setPos( ) function sets an activist to the pos (x, y) in
+    //   the town grid and clears their last pos.
+    //Pre: (x, y) is a valid pos in the town's grid.
+    //Post: The activist object is set to a different location in the town
+    //   param's grid. The x and y members of the calling object are updated to
+    //   reflect the change in position.
+
+    void setPos( Town& town, const Point<int>& pos );
+
     //Desc: The randMove( ) function randomly moves an activist one space
     //   in any direction.
     //Pre:  None.
@@ -79,66 +133,14 @@ class Activist
     //Desc:
     //Pre:
     //Post:
-    
-    void smartMove(Town & town, const int x, const int y);
- 
-    //Desc:
-    //Pre:
-    //Post:
-    void move(Town & town, const int pol_x, const int pol_y);
 
-    
-    //Desc:
-    //Pre:
-    //Post:
-    
-    void collide(Town & town, const int x, const int y);
-    
-    //Desc:
-    //Pre:
-    //Post:    
-    void setState(const short state);    
-    
-    //Desc:
-    //Pre:
-    //Post:
-    short getState() const {return m_State;}
-    
-    //Desc:
-    //Pre:
-    //Post:
-    short getResult() const {return result;}
-    
-    //Desc:
-    //Pre:
-    //Post:
-    float getToxicity() const {return m_Toxicity;}
-    
-    //Desc:
-    //Pre:
-    //Post:
-    Activist & operator+=(const root & rt);
-        
-  private:
-    //Desc: The setPos( ) function sets an activist to the pos (x, y) in
-    //   the town grid and clears their last pos.
-    //Pre: (x, y) is a valid pos in the town's grid.
-    //Post: The activist object is set to a different location in the town
-    //   param's grid. The x and y members of the calling object are updated to
-    //   reflect the change in position.
+    void smartMove( Town& town, const Point<int>& polluterPos );
 
-    void setPos( Town& town, const int x, const int y );
+    //Desc:
+    //Pre:
+    //Post:
 
-    int m_X; // x coordinate
-    int m_Y; // y coordinate
-    short m_State; // state (normal, gone, or cool)
-    char m_Symbol; // char representation on grid
-    int m_Dignity; // amount of dignity
-    float m_Toxicity; // toxicity level
-    string m_Name; // name
-    bool overCop; // if activist is with a cop
-    short result; // how the day ended (0: exit, 1: gone on roots,
-                  // 2: caught polluter, 3: death by loss of dignity)
+    char handleCollision( Town& town, const Point<int>& pos );
 };
 
 #endif

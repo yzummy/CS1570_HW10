@@ -1,3 +1,10 @@
+/*
+   Programmers: Christopher O'Toole and Yunchao Zhang
+   Date:
+   File: config.h
+   Purpose:
+*/
+
 #ifndef CONFIG_H
 #define CONFIG_H
 
@@ -16,8 +23,8 @@ struct Config
   short numRoots;
   short numCops;
   short numDays;
-  short numPtsLostForWallCollision;
-  short numPtsLostForTalkingToCop;
+  short numPtsLostForWall;
+  short numPtsLostForCop;
   float stat[NUM_STATS];
 
   Config( const string& configFileName );

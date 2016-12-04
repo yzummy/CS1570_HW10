@@ -1,40 +1,29 @@
 /*
   Programmer: Christopher O'Toole and Yunchao Zhang
-  Date: 
+  Date:
   File: root.cpp
-  Purpose: define functions for root.h
+  Purpose:
 */
 
 #include "root.h"
-#include <cstdlib>
 using namespace std;
 
-root::root()
+double Root::getRandDouble( const double min, const double max )
 {
-  bool isNeg = 0;
-  if(rand() % 2)
-    isNeg = 1;
-  if(isNeg)
+  return min + ( max - min ) * ( static_cast<double>( rand( ) ) / RAND_MAX );
+}
+
+Root::Root( )
+{
+  // make effect positive or negative by chance
+  if( rand( ) % 2 ) // make effect negative
   {
-    effVal = MIN_NEGATIVE + static_cast<float> (rand()) 
-            / (static_cast<float> (RAND_MAX 
-            / (MAX_NEGATIVE - MIN_NEGATIVE)));
-    type = NEG_TYPE;         
-  }else
+    effVal = -getRandDouble( MIN_NEGATIVE_VAL, MAX_NEGATIVE_VAL );
+    type = NEG_TYPE;
+  }
+  else              // make effect positive
   {
-    effVal = MIN_POSITIVE + static_cast<float> (rand())
-            / (static_cast<float> (RAND_MAX
-            / (MAX_POSITIVE - MIN_POSITIVE)));
+    effVal = getRandDouble( MIN_POSITIVE_VAL, MAX_POSITIVE_VAL );
     type = POS_TYPE;
   }
-}
-
-string root::getType() const
-{
-  return type;
-}
-
-float root::getEffVal() const
-{
-  return effVal;
 }
