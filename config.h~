@@ -40,7 +40,7 @@ struct Config
 template <typename T>
 void openFile( T& fileIn, const string& fileName )
 {
-  fileIn.open( fileName.c_str( ) );
+  fileIn.open( fileName );
 
   if ( !fileIn )
   {

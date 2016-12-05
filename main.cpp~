@@ -12,11 +12,12 @@ int main()
   Config config( CONFIG_FILE_NAME ); // config file object
   SimulationStat stats[NUM_STATS] = // array of simulation stat objecs.
   {
-    { "\tActivist exited and got caught by the EPA : ", true,  0 },
-    { "\tActivist became wacked out                : ", true,  0 },
-    { "\tActivist successfully caught the polluter : ", true,  0 },
-    { "\tActivist died by loss of dignity          : ", true,  0 },
-    { "\tAverage toxicity when day is done         : ", false, 0 }
+    //           stat desc                     show as percent
+    { "\tActivist exited and got caught by the EPA : ", true },
+    { "\tActivist became wacked out                : ", true },
+    { "\tActivist successfully caught the polluter : ", true },
+    { "\tActivist died by loss of dignity          : ", true },
+    { "\tAverage toxicity when day is done         : " }
   };
 
   // set numDays for each SimulationStat object.
