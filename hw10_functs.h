@@ -16,7 +16,7 @@
 using namespace std;
 
 const short TOXICITY_STAT = 4;
-const bool DEBUG = false;
+const bool DEBUG = true;
 
 struct SimulationStat
 {

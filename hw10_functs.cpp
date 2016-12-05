@@ -48,7 +48,7 @@ void runSimulation( const Config& config, SimulationStat stats[] )
   return;
 }
 
-#ifdef WIN32
+#ifdef _WIN32
   #include <windows.h>
   #define WIN32_LEAN_AND_MEAN
 
@@ -70,15 +70,16 @@ void runSimulation( const Config& config, SimulationStat stats[] )
 
     do
     {
-      homer.randMove(town);
+      homer.randMove( town );
       lisa.move( town, homer.getPos( ) );
 
       cout << town << endl;
 
-      Sleep( 500 );
+      Sleep( 250 );
       debugSetConsoleCursorPos( 0, 0 );
     } while( !lisa.isInactive( ) );
 
+    debugSetConsoleCursorPos( 0, config.gridSize );
     return;
   }
 #endif
